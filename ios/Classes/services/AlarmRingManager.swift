@@ -153,27 +153,31 @@ class AlarmRingManager: NSObject {
 
     private func loadAudioPlayer(registrar: FlutterPluginRegistrar, assetAudioPath: String) -> AVAudioPlayer? {
         let audioURL: URL
-        if assetAudioPath.hasPrefix("assets/") || assetAudioPath.hasPrefix("asset/") {
-            let filename = registrar.lookupKey(forAsset: assetAudioPath)
-            guard let audioPath = Bundle.main.path(forResource: filename, ofType: nil) else {
-                os_log(.error, log: AlarmRingManager.logger, "Audio file not found: %@", assetAudioPath)
-                return nil
-            }
-            audioURL = URL(fileURLWithPath: audioPath)
-        } else {
-            guard let documentsDirectory = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first else {
-                os_log(.error, log: AlarmRingManager.logger, "Document directory not found.")
-                return nil
-            }
-            audioURL = documentsDirectory.appendingPathComponent(assetAudioPath)
-        }
-
+        
         do {
-            let audioPlayer = try AVAudioPlayer(contentsOf: audioURL)
-            os_log(.debug, log: AlarmRingManager.logger, "Audio player loaded from: %@", assetAudioPath)
-            return audioPlayer
+            if assetAudioPath.hasPrefix("assets/") {
+                // Handle asset files
+                let filename = registrar.lookupKey(forAsset: assetAudioPath)
+                guard let audioPath = Bundle.main.path(forResource: filename, ofType: nil) else {
+                    os_log(.error, log: AlarmRingManager.logger, "Audio file not found: %@", assetAudioPath)
+                    return nil
+                }
+                audioURL = URL(fileURLWithPath: audioPath)
+            } else if assetAudioPath.hasPrefix("/") {
+                // Handle absolute paths (device-stored files)
+                audioURL = URL(fileURLWithPath: assetAudioPath)
+            } else {
+                // Handle relative paths (app directory files)
+                guard let documentsDirectory = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first else {
+                    os_log(.error, log: AlarmRingManager.logger, "Document directory not found.")
+                    return nil
+                }
+                audioURL = documentsDirectory.appendingPathComponent(assetAudioPath)
+            }
+            
+            return try AVAudioPlayer(contentsOf: audioURL)
         } catch {
-            os_log(.error, log: AlarmRingManager.logger, "Error loading audio player: %@", error.localizedDescription)
+            os_log(.error, log: AlarmRingManager.logger, "Error creating audio player: %{public}@", error.localizedDescription)
             return nil
         }
     }

@@ -90,27 +90,20 @@ class AlarmSettings extends Equatable {
   /// Date and time when the alarm will be triggered.
   final DateTime dateTime;
 
-  /// Path to audio asset to be used as the alarm ringtone. Accepted formats:
+  /// Path to audio file to be used as the alarm ringtone. Accepted formats:
   ///
-  /// * **Project asset**: Specifies an asset bundled with your Flutter project.
-  ///  Use this format for assets that are included in your project's
-  /// `pubspec.yaml` file.
-  ///  Example: `assets/audio.mp3`.
-  /// * **Absolute file path**: Specifies a direct file system path to the
-  /// audio file. This format is used for audio files stored outside the
-  /// Flutter project, such as files saved in the device's internal
-  /// or external storage.
-  ///  Example: `/path/to/your/audio.mp3`.
-  /// * **Relative file path**: Specifies a file path relative to a predefined
-  /// base directory in the app's internal storage. This format is convenient
-  /// for referring to files that are stored within a specific directory of
-  /// your app's internal storage without needing to specify the full path.
-  ///  Example: `Audios/audio.mp3`.
+  /// * **Project asset**: Files bundled with your Flutter project.
+  ///   Example: `assets/audio.mp3`
   ///
-  /// If you want to use aboslute or relative file path, you must request
-  /// android storage permission and add the following permission to your
-  /// `AndroidManifest.xml`:
-  /// `android.permission.READ_EXTERNAL_STORAGE`
+  /// * **Absolute file path**: Direct file system path to audio file.
+  ///   Example: `/storage/emulated/0/Download/audio.mp3`
+  ///
+  /// * **Relative file path**: Path relative to app's document directory.
+  ///   Example: `custom_sounds/audio.mp3`
+  ///
+  /// Note: For absolute or relative file paths, ensure proper permissions:
+  /// - Android: Add READ_EXTERNAL_STORAGE permission
+  /// - iOS: Add Privacy - Music Usage Description to Info.plist
   final String assetAudioPath;
 
   /// Settings for the alarm volume.

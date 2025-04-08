@@ -39,32 +39,30 @@ class AudioService(private val context: Context) {
         fadeDuration: Duration?,
         fadeSteps: List<VolumeFadeStep>
     ) {
-        stopAudio(id) // Stop and release any existing MediaPlayer and Timer for this ID
-
-        val baseAppFlutterPath = context.filesDir.parent?.plus("/app_flutter/")
-        val adjustedFilePath = when {
-            filePath.startsWith("assets/") -> "flutter_assets/$filePath"
-            !filePath.startsWith("/") -> baseAppFlutterPath + filePath
-            else -> filePath
-        }
+        stopAudio(id)
 
         try {
             MediaPlayer().apply {
                 when {
-                    adjustedFilePath.startsWith("flutter_assets/") -> {
-                        // It's an asset file
+                    // Handle asset files
+                    filePath.startsWith("assets/") -> {
                         val assetManager = context.assets
-                        val descriptor = assetManager.openFd(adjustedFilePath)
+                        val adjustedPath = "flutter_assets/$filePath"
+                        val descriptor = assetManager.openFd(adjustedPath)
                         setDataSource(
                             descriptor.fileDescriptor,
                             descriptor.startOffset,
                             descriptor.length
                         )
                     }
-
+                    // Handle absolute paths (device-stored files)
+                    filePath.startsWith("/") -> {
+                        setDataSource(filePath)
+                    }
+                    // Handle relative paths (app directory files)
                     else -> {
-                        // Handle local files and adjusted paths
-                        setDataSource(adjustedFilePath)
+                        val baseAppPath = context.filesDir.parent?.plus("/app_flutter/")
+                        setDataSource(baseAppPath + filePath)
                     }
                 }
 
@@ -91,8 +89,7 @@ class AudioService(private val context: Context) {
                 }
             }
         } catch (e: Exception) {
-            e.printStackTrace()
-            Log.e(TAG, "Error playing audio: $e")
+            Log.e(TAG, "Error playing audio: ${e.message}")
         }
     }
 
