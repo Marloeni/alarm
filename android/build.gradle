@@ -2,17 +2,15 @@ group 'com.gdelataillade.alarm.alarm'
 version '1.0-SNAPSHOT'
 
 buildscript {
-    ext.kotlin_version = '1.8.22' // Updated to a more stable version
+    ext.kotlin_version = '1.9.20'
     repositories {
         google()
         mavenCentral()
-        // Remove or comment out any references to JCenter or Bintray
     }
 
     dependencies {
         classpath 'com.android.tools.build:gradle:8.2.1'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
-        classpath "org.jetbrains.kotlin:kotlin-serialization:$kotlin_version"
     }
 }
 
@@ -20,13 +18,12 @@ allprojects {
     repositories {
         google()
         mavenCentral()
-        // Remove or comment out any references to JCenter or Bintray
     }
 }
 
 apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
-apply plugin: 'kotlinx-serialization'
+apply plugin: 'org.jetbrains.kotlin.plugin.serialization'
 
 android {
     namespace 'com.gdelataillade.alarm.alarm'
@@ -34,12 +31,12 @@ android {
     compileSdkVersion 34
 
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_17 // Updated to Java 17
-        targetCompatibility JavaVersion.VERSION_17 // Updated to Java 17
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
     }
 
     kotlinOptions {
-        jvmTarget = '17' // Updated to Java 17
+        jvmTarget = '17'
     }
 
     sourceSets {
@@ -60,5 +57,5 @@ android {
 dependencies {
     implementation 'androidx.datastore:datastore:1.0.0'
     implementation 'androidx.datastore:datastore-preferences:1.0.0'
-    implementation "org.jetbrains.kotlinx:kotlinx-serialization-json:1.5.1" // Updated version
+    implementation "org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.0"
 }
